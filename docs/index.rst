@@ -12,6 +12,7 @@ Contents:
    :maxdepth: 4
 
    introduction
+   error_reporting
    input-output-on-streams
    inter-process-communication
    system-configuration-parameters
