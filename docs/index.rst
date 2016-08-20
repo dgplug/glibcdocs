@@ -12,6 +12,7 @@ Contents:
    :maxdepth: 4
 
    introduction
+   input-output-on-streams
    inter-process-communication
    system-configuration-parameters
    internal-probes
