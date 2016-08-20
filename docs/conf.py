@@ -259,7 +259,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'Glibc.tex', u'Glibc Documentation',
+    (master_doc, 'Glibc.tex', u'The GNU C Library Manual',
      u'Many', 'manual'),
 ]
 
