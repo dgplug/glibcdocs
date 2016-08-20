@@ -1,13 +1,14 @@
-2 Error Reporting
-*****************
+===============
+Error Reporting
+===============
 
 Many functions in the GNU C Library detect and report error conditions, and sometimes your programs need to check for these error conditions. For example, when you open an input file, you should verify that the file was actually opened correctly, and print an error message or take other appropriate action if the call to the library function failed.
 
 This chapter describes how the error reporting facility works. Your program should include the header file ``errno.h`` to use this facility.
 
 
-2.1 Checking for Errors
------------------------
+Checking for Errors
+===================
 
 Most library functions return a special value to indicate that they have failed. The special value is typically -1, a null pointer, or a constant such as ``EOF`` that is defined for that purpose. But this return value tells you only that an error has occurred. To find out what kind of error it was, you need to look at the error code stored in the variable ``errno``. This variable is declared in the header file ``errno.h``.
 
@@ -36,8 +37,8 @@ Except on GNU/Hurd systems, almost any system call can return ``EFAULT`` if it i
 In some Unix systems, many system calls can also return ``EFAULT`` if given as an argument a pointer into the stack, and the kernel for some obscure reason fails in its attempt to extend the stack. If this ever happens, you should probably try using statically or dynamically allocated memory instead of stack memory on that system. 
 
 
-2.2 Error Codes
----------------
+Error Codes
+===========
 
 The error code macros are defined in the header file ``errno.h``. All of them expand into integer constant values. Some of these error codes can’t occur on GNU systems, but they can occur using the GNU C Library on other systems.
 
@@ -542,8 +543,8 @@ Macro:`int` **EPERM**
 ``int EHWPOISON``
 
 
-2.3 Error Messages
-------------------
+Error Messages
+==============
 
 The library has functions and variables designed to make it easy for your program to report
 informative error messages in the customary format about the failure of a library call. The
