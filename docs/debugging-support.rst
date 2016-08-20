@@ -71,13 +71,13 @@ for the purposes of logging or diagnostics.
 	and can therefore be used in situations where that function might fail.
 
 
-The following program illustrates the use of these functions. Note that the array to
-contain the return addresses returned by *backtrace* is allocated on the stack. Therefore
-code like this can be used in situations where the memory handling via malloc does not
-work anymore (in which case the *backtrace_symbols* has to be replaced by a *backtrace_
-symbols_fd* call as well). The number of return addresses is normally not very large. Even
-complicated programs rather seldom have a nesting level of more than, say, 50 and with
-200 possible entries probably all programs should be covered.
+    The following program illustrates the use of these functions. Note that the array to
+    contain the return addresses returned by *backtrace* is allocated on the stack. Therefore
+    code like this can be used in situations where the memory handling via malloc does not
+    work anymore (in which case the *backtrace_symbols* has to be replaced by a *backtrace_
+    symbols_fd* call as well). The number of return addresses is normally not very large. Even
+    complicated programs rather seldom have a nesting level of more than, say, 50 and with
+    200 possible entries probably all programs should be covered.
 
 
 .. code-block:: c
@@ -90,32 +90,32 @@ complicated programs rather seldom have a nesting level of more than, say, 50 an
 	void
 	print_trace (void)
 	{
-	 void *array[10];
-	 size_t size;
-	 char **strings;
-	 size_t i;
+	  void *array[10];
+	  size_t size;
+	  char **strings;
+	  size_t i;
 
-	 size = backtrace (array, 10);
-	 strings = backtrace_symbols (array, size);
+	  size = backtrace (array, 10);
+	  strings = backtrace_symbols (array, size);
 
-	 printf ("Obtained %zd stack frames.\n", size);
+	  printf ("Obtained %zd stack frames.\n", size);
 
-	 for (i = 0; i < size; i++)
+	  for (i = 0; i < size; i++)
 		 printf ("%s\n", strings[i]);
-	
-	 free (strings);
+
+	  free (strings);
 	}
 
 	/* A dummy function to make the backtrace more interesting. */
 	void
 	dummy_function (void)
 	{
-	 print_trace ();
+	  print_trace ();
 	}
 
 	int
 	main (void)
 	{
-	 dummy_function ();
-         return 0;
+	  dummy_function ();
+	  return 0;
 	}
