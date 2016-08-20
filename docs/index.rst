@@ -13,6 +13,7 @@ Contents:
 
    introduction
    inter-process-communication
+   system-configuration-parameters
 
 
 Indices and tables
