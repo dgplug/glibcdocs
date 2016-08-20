@@ -14,6 +14,7 @@ Contents:
    introduction
    inter-process-communication
    system-configuration-parameters
+   internal-probes
 
 
 Indices and tables
