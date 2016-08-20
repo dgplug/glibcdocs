@@ -15,6 +15,7 @@ Contents:
    inter-process-communication
    system-configuration-parameters
    internal-probes
+   debugging-support
 
 
 Indices and tables
