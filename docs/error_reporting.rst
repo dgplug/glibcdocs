@@ -660,6 +660,7 @@ because those other library functions might overwrite errno in the meantime.
 	return stream;
     }
 
+
   Using perror has the advantage that the function is portable and available on all systems
 implementing ISO C. But often the text perror generates is not what is wanted and there
 is no way to extend or change what perror does. The GNU coding standard, for instance,
@@ -765,6 +766,7 @@ A program which read some input file and reports errors in it could look like th
       if (error_message_count != 0)
 	error (EXIT_FAILURE, 0, "%u errors found", error_message_count);
     }
+
 
   error and error_at_line are clearly the functions of choice and enable the programmer
 to write applications which follow the GNU coding standard. The GNU C Library addi-
