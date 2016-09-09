@@ -103,4 +103,22 @@ here are all declared in ``fnmatch.h``.
         The pattern matches if the input string cannot be matched with
         any of the patterns in the ``pattern-list``.
 
+Globbing
+========
 
+The archetypal use of wildcards is for matching against the files in a directory, and making
+a list of all the matches. This is called ``globbing``.
+
+You could do this using ``fnmatch``, by reading the directory entries one by one and testing
+each one with ``fnmatch``. But that would be slow (and complex, since you would have to
+handle subdirectories by hand).
+
+The library provides a function ``glob`` to make this particular use of wildcards convenient.
+``glob`` and the other symbols in this section are declared in ``glob.h``.
+
+Calling glob
+------------
+
+The result of globbing is a vector of file names (strings). To return this vector, ``glob`` uses a
+special data type, ``glob_t``, which is a structure. You pass ``glob`` the address of the structure,
+and it fills in the structure’s fields to tell you about the results.
