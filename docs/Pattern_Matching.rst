@@ -26,3 +26,19 @@ here are all declared in ``fnmatch.h``.
     See below for a list of the defined flags.
     In the GNU C Library, ``fnmatch`` might sometimes report “errors” by returning nonzero
     values that are not equal to ``FNM_NOMATCH``.
+
+    These are the available flags for the ``flags`` argument:
+
+``FNM_FILE_NAME``
+
+    Treat the ``'/'`` character specially, for matching file names. If this flag is set,
+    wildcard constructs in ``pattern`` cannot match ``'/'`` in ``string``. Thus, the only way
+    to match ``'/'`` is with an explicit ``'/'`` in ``pattern``.
+
+
+``FNM_PATHNAME``
+
+    This is an alias for ``FNM_FILE_NAME``; it comes from POSIX.2. We don’t recom-
+    mend this name because we don’t use the term "pathname" for file names.
+
+
