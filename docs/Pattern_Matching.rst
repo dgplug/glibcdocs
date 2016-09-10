@@ -352,5 +352,82 @@ For use in the ``glob64`` function ``glob.h`` contains another definition for a 
 char *filename, int error-code ) , glob t *vector-ptr )``        [Function]
 
     Preliminary: | MT-Unsafe race:utent env sig:ALRM timer locale | AS-Unsafe dlopen
-                 plugin corrupt heap lock | AC-Unsafe corrupt lock fd mem | See Section
-                 [POSIX Safety Concepts].
+    plugin corrupt heap lock | AC-Unsafe corrupt lock fd mem | 
+        See Section [POSIX Safety Concepts].
+
+
+
+    The function ``glob`` does globbing using the pattern ``pattern`` in the current directory.
+    It puts the result in a newly allocated vector, and stores the size and address of
+    this vector into ``*vector-ptr``. The argument ``flags`` is a combination of bit flags; see
+    Section [Flags for Globbing] for details of the flags.
+
+    The result of globbing is a sequence of file names. The function ``glob`` allocates a string
+    for each resulting word, then allocates a vector of type ``char **`` to store the addresses
+    of these strings. The last element of the vector is a null pointer. This vector is called
+    the ``word vector``.
+
+    To return this vector, ``glob`` stores both its address and its length (number of elements,
+    not counting the terminating null pointer) into ``*vector-ptr``.
+
+    Normally, ``glob`` sorts the file names alphabetically before returning them. You can
+    turn this off with the flag ``GLOB_NOSORT`` if you want to get the information as fast
+    as possible. Usually it’s a good idea to let ``glob`` sort them—if you process the files
+    in alphabetical order, the users will have a feel for the rate of progress that your
+    application is making.
+
+    If ``glob`` succeeds, it returns ``0``. Otherwise, it returns one of these error codes:
+
+    ``GLOB_ABORTED``
+
+        There was an error opening a directory, and you used the flag ``GLOB_ERR``
+        or your specified ``errfunc`` returned a nonzero value. See below for an
+        explanation of the ``GLOB_ERR`` flag and ``errfunc``.
+
+    ``GLOB_NOMATCH``
+
+        The pattern didn’t match any existing files. If you use the ``GLOB_NOCHECK``
+        flag, then you never get this error code, because that flag tells ``glob`` to
+        ``pretend`` that the pattern matched at least one file.
+
+    ``GLOB_NOSPACE``
+
+        It was impossible to allocate memory to hold the result.
+
+    In the event of an error, ``glob`` stores information in ``*vector-ptr`` about all the matches
+    it has found so far.
+
+    It is important to notice that the ``glob`` function will not fail if it encounters directories
+    or files which cannot be handled without the ``LFS`` interfaces. The implementation of
+    ``glob`` is supposed to use these functions internally. This at least is the assumption
+    made by the Unix standard. The GNU extension of allowing the user to provide their
+    own directory handling and ``stat`` functions complicates things a bit. If these callback
+    functions are used and a large file or directory is encountered ``glob can fail``.
+
+
+``int glob64 ( const char *pattern, int flags, int ( *errfunc ) ( const
+char *filename, int error-code ) , glob64 t *vector-ptr )            [Function]
+
+    Preliminary: | MT-Unsafe race:utent env sig:ALRM timer locale | AS-Unsafe dlopen
+    corrupt heap lock | AC-Unsafe corrupt lock fd mem |
+        See Section [POSIX Safety Concepts]
+
+    The ``glob64`` function was added as part of the ``Large File Summit`` extensions but is not
+    part of the original ``LFS`` proposal. The reason for this is simple: it is not necessary.
+    The necessity for a ``glob64`` function is added by the extensions of the GNU ``glob``
+    implementation which allows the user to provide their own directory handling and
+    stat functions. The ``readdir`` and ``stat`` functions do depend on the choice of ``_FILE_
+    OFFSET_BITS`` since the definition of the types ``struct dirent`` and ``struct stat`` will
+    change depending on the choice.
+
+    Besides this difference, ``glob64`` works just like ``glob`` in all aspects.
+
+    This function is a GNU extension.
+
+Flags for Globbing
+------------------
+
+This section describes the standard flags that you can specify in the ``flags`` argument to ``glob``.
+Choose the flags you want, and combine them with the C bitwise OR operator |.
+
+Note that there are Section [More Flags for Globbing] available as GNU extensions.
