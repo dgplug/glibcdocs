@@ -406,7 +406,7 @@ char *filename, int error-code ) , glob t *vector-ptr )``        [Function]
 
 
 ``int glob64 ( const char *pattern, int flags, int ( *errfunc ) ( const
-char *filename, int error-code ) , glob64 t *vector-ptr )            [Function]
+char *filename, int error-code ) , glob64 t *vector-ptr )``            [Function]
 
     Preliminary: | MT-Unsafe race:utent env sig:ALRM timer locale | AS-Unsafe dlopen
     corrupt heap lock | AC-Unsafe corrupt lock fd mem |
