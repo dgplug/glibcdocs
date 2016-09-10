@@ -431,3 +431,44 @@ This section describes the standard flags that you can specify in the ``flags`` 
 Choose the flags you want, and combine them with the C bitwise OR operator |.
 
 Note that there are Section [More Flags for Globbing] available as GNU extensions.
+
+``GLOB_APPEND``
+
+    Append the words from this expansion to the vector of words produced by
+    previous calls to ``glob``. This way you can effectively expand several words as if
+    they were concatenated with spaces between them.
+
+    In order for appending to work, you must not modify the contents of the word
+    vector structure between calls to ``glob``. And, if you set ``GLOB_DOOFFS`` in the first
+    call to ``glob``, you must also set it when you append to the results.
+
+    Note that the pointer stored in ``gl_pathv`` may no longer be valid after you call
+    ``glob`` the second time, because ``glob`` might have relocated the vector. So always
+    fetch ``gl_pathv`` from the ``glob_t`` structure after each ``glob`` call; **never** save the
+    pointer across calls.
+
+``GLOB_DOOFFS``
+
+    Leave blank slots at the beginning of the vector of words. The ``gl_offs`` field
+    says how many slots to leave. The blank slots contain null pointers.
+
+``GLOB_ERR``
+
+    Give up right away and report an error if there is any difficulty reading the
+    directories that must be read in order to expand *pattern* fully. Such difficulties
+    might include a directory in which you don’t have the requisite access. Nor-
+    mally, ``glob`` tries its best to keep on going despite any errors, reading whatever
+    directories it can.
+
+    You can exercise even more control than this by specifying an error-handler
+    function *errfunc* when you call glob. If *errfunc* is not a null pointer, then
+    ``glob`` doesn’t give up right away when it can’t read a directory; instead, it calls
+    *errfunc* with two arguments, like this:
+
+    ``(*errfunc) (filename, error-code)``
+
+    The argument filename is the name of the directory that ``glob`` couldn’t open
+    or couldn’t read, and error-code is the ``errno`` value that was reported to ``glob``.
+
+    If the error handler function returns nonzero, then ``glob`` gives up right away.
+    Otherwise, it continues.
