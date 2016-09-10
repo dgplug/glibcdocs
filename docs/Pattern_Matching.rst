@@ -17,7 +17,7 @@ here are all declared in ``fnmatch.h``.
 ``int fnmatch ( const char *pattern, const char *string, int flags )``        [Function]
 
     Preliminary:  | MT-Safe env locale | AS-Unsafe heap | AC-Unsafe mem |
-                  See Section 1.2.2.1 [POSIX Safety Concepts], page 2.
+                  See Section [POSIX Safety Concepts].
 
     This function tests whether the string string matches the pattern pattern. It re-
     turns 0 if they do match; otherwise, it returns the nonzero value ``FNM_NOMATCH``. The
@@ -123,7 +123,7 @@ The result of globbing is a vector of file names (strings). To return this vecto
 special data type, ``glob_t``, which is a structure. You pass ``glob`` the address of the structure,
 and it fills in the structure’s fields to tell you about the results.
 
-``glob_t``
+``glob_t``                                            [Data Type]
 
     This data type holds a pointer to a word vector. More precisely, it records both the
     address of the word vector and its size. The GNU implementation contains some
@@ -259,7 +259,7 @@ and it fills in the structure’s fields to tell you about the results.
     ``gl_flags``
 
         The flags used when ``glob`` was called. In addition, ``GLOB_MAGCHAR`` might
-        be set. See Section 10.2.2 [Flags for Globbing], page 229, for more details.
+        be set. See Section [Flags for Globbing] for more details.
 
         This is a GNU extension.
 
@@ -269,3 +269,88 @@ For use in the ``glob64`` function ``glob.h`` contains another definition for a 
 ``gl_lstat``.
 
 
+``globe64_t``                                           [Data Type]
+
+    This data type holds a pointer to a word vector. More precisely, it records both the
+    address of the word vector and its size. The GNU implementation contains some
+    more fields which are non-standard extensions.
+
+    ``gl_pathc``
+
+        The number of elements in the vector, excluding the initial null entries if
+        the ``GLOB_DOOFFS`` flag is used (see ``gl_offs`` below).
+
+    ``gl_pathv``
+
+        The address of the vector. This field has type ``char **``.
+
+    ``gl_offs``
+
+        The offset of the first real element of the vector, from its nominal address
+        in the ``gl_pathv field``. Unlike the other fields, this is always an input to
+        ``glob``, rather than an output from it.
+
+        If you use a nonzero offset, then that many elements at the beginning
+        of the vector are left empty. (The ``glob`` function fills them with null
+        pointers.)
+
+        The ``gl_offs`` field is meaningful only if you use the ``GLOB_DOOFFS`` flag.
+        Otherwise, the offset is always zero regardless of what is in this field, and
+        the first real element comes at the beginning of the vector.
+
+    ``gl_closedir``
+
+        The address of an alternative implementation of the ``closedir`` function.
+        It is used if the ``GLOB_ALTDIRFUNC`` bit is set in the flag parameter. The
+        type of this field is ``void (*) (void *)``.
+
+        This is a GNU extension.
+
+    ``gl_readdir``
+
+        The address of an alternative implementation of the ``readdir64`` func-
+        tion used to read the contents of a directory. It is used if the ``GLOB_
+        ALTDIRFUNC`` bit is set in the flag parameter. The type of this field is
+        ``struct dirent64 *(*) (void *)``.
+
+        This is a GNU extension.
+
+    ``gl_opendir``
+
+        The address of an alternative implementation of the ``opendir`` function.
+        It is used if the ``GLOB_ALTDIRFUNC`` bit is set in the flag parameter. The
+        type of this field is ``void *(*) (const char *)``.
+
+        This is a GNU extension.
+
+    ``gl_stat``
+
+        The address of an alternative implementation of the ``stat64`` function to
+        get information about an object in the filesystem. It is used if the ``GLOB_
+        ALTDIRFUNC`` bit is set in the flag parameter. The type of this field is
+        ``int (*) (const char *, struct stat64 *)``.
+
+        This is a GNU extension.
+
+    ``gl_lstat``
+
+        The address of an alternative implementation of the ``lstat64`` function to
+        get information about an object in the filesystems, not following symbolic
+        links. It is used if the ``GLOB_ALTDIRFUNC`` bit is set in the flag parameter.
+        The type of this field is ``int (*) (const char *, struct stat64 *)``.
+
+        This is a GNU extension.
+
+    ``gl_flags``
+
+        The flags used when ``glob`` was called. In addition, ``GLOB_MAGCHAR`` might
+        be set. See Section [Flags for Globbing], for more details.
+
+        This is a GNU extension.
+
+``int glob ( const char *pattern, int flags, int ( *errfunc ) ( const
+char *filename, int error-code ) , glob t *vector-ptr )``        [Function]
+
+    Preliminary: | MT-Unsafe race:utent env sig:ALRM timer locale | AS-Unsafe dlopen
+                 plugin corrupt heap lock | AC-Unsafe corrupt lock fd mem | See Section
+                 [POSIX Safety Concepts].
