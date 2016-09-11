@@ -472,3 +472,173 @@ Note that there are Section [More Flags for Globbing] available as GNU extension
 
     If the error handler function returns nonzero, then ``glob`` gives up right away.
     Otherwise, it continues.
+
+``GLOB_MARK``
+
+    If the pattern matches the name of a directory, append ``'/'`` to the directory’s
+    name when returning it.
+
+``GLOB_NOCHECK``
+
+    If the pattern doesn’t match any file names, return the pattern itself as if it
+    were a file name that had been matched. (Normally, when the pattern doesn’t
+    match anything, ``glob`` returns that there were no matches.)
+
+``GLOB_NOESCAPE``
+
+    Don’t treat the ``'\'`` character specially in patterns. Normally, ``'\'`` quotes the
+    following character, turning off its special meaning (if any) so that it matches
+    only itself. When quoting is enabled, the pattern ``'\?'`` matches only the string
+    ``'?'``, because the question mark in the pattern acts like an ordinary character.
+
+    If you use ``GLOB_NOESCAPE``, then ``'\'`` is an ordinary character.
+
+    ``glob`` does its work by calling the function fnmatch repeatedly. It handles the
+    flag ``GLOB_NOESCAPE`` by turning on the ``FNM_NOESCAPE`` flag in calls to fnmatch.
+
+``GLOB_NOSORT``
+
+    Don’t sort the file names; return them in no particular order. (In practice, the
+    order will depend on the order of the entries in the directory.) The only reason
+    *not* to sort is to save time.
+
+More Flags for Globbing
+-----------------------
+
+Beside the flags described in the last section, the GNU implementation of ``glob`` allows a
+few more flags which are also defined in the ``glob.h`` file. Some of the extensions implement
+functionality which is available in modern shell implementations.
+
+``GLOB_PERIOD``
+
+    The ``.`` character (period) is treated special. It cannot be matched by wildcards.
+    See Section [Wildcard Matching] ``FNM_PERIOD``.
+
+``GLOB_MAGCHAR``
+
+    The ``GLOB_MAGCHAR`` value is not to be given to ``glob`` in the *flags* parameter. In-
+    stead, ``glob`` sets this bit in the *gl_flags* element of the *glob_t* structure provided
+    as the result if the pattern used for matching contains any wildcard character.
+
+``GLOB_ALTDIRFUNC``
+
+    Instead of using the normal functions for accessing the filesystem the ``glob`` im-
+    plementation uses the user-supplied functions specified in the structure pointed
+    to by *pglob* parameter. For more information about the functions refer to
+    the sections about directory handling see Section [Accessing Directories],
+    and Section [Reading the Attributes of a File].
+
+``GLOB_BRACE``
+
+    If this flag is given, the handling of braces in the pattern is changed. It is
+    now required that braces appear correctly grouped. I.e., for each opening brace
+    there must be a closing one. Braces can be used recursively. So it is possible
+    to define one brace expression in another one. It is important to note that
+    the range of each brace expression is completely contained in the outer brace
+    expression (if there is one).
+
+    The string between the matching braces is separated into single expressions
+    by splitting at , (comma) characters. The commas themselves are discarded.
+    Please note what we said above about recursive brace expressions. The commas
+    used to separate the subexpressions must be at the same level. Commas in brace
+    subexpressions are not matched. They are used during expansion of the brace
+    expression of the deeper level. The example below shows this
+
+        ``glob ("{foo/{,bar,biz},baz}", GLOB_BRACE, NULL, &result)``
+
+    is equivalent to the sequence
+
+        ``glob ("foo/", GLOB_BRACE, NULL, &result)
+          glob ("foo/bar", GLOB_BRACE|GLOB_APPEND, NULL, &result)
+          glob ("foo/biz", GLOB_BRACE|GLOB_APPEND, NULL, &result)
+          glob ("baz", GLOB_BRACE|GLOB_APPEND, NULL, &result)``
+
+    if we leave aside error handling.
+
+``GLOB_NOMAGIC``
+
+    If the pattern contains no wildcard constructs (it is a literal file name), return
+    it as the sole “matching” word, even if no file exists by that name.
+
+``GLOB_TILDE``
+
+    If this flag is used the character ``~`` (tilde) is handled specially if it appears at the
+    beginning of the pattern. Instead of being taken verbatim it is used to represent
+    the home directory of a known user.
+
+    If ``~`` is the only character in pattern or it is followed by a ``/`` (slash), the home
+    directory of the process owner is substituted. Using getlogin and getpwnam
+    the information is read from the system databases. As an example take user
+    bart with his home directory at **/home/bart**. For him a call like
+
+        ``glob ("~/bin/*", GLOB_TILDE, NULL, &result)``
+
+    would return the contents of the directory **/home/bart/bin**. Instead of referring
+    to the own home directory it is also possible to name the home directory of other
+    users. To do so one has to append the user name after the tilde character. So
+    the contents of user homer’s bin directory can be retrieved by
+
+        ``glob ("~homer/bin/*", GLOB_TILDE, NULL, &result)``
+
+    If the user name is not valid or the home directory cannot be determined
+    for some reason the pattern is left untouched and itself used as the result.
+
+    I.e., if in the last example home is not available the tilde expansion yields to
+    ``"~homer/bin/*"`` and glob is not looking for a directory named ``~homer``.
+
+    This functionality is equivalent to what is available in C-shells if the nonomatch
+    flag is set.
+
+``GLOB_TILDE_CHECK``
+
+    If this flag is used ``glob`` behaves as if ``GLOB_TILDE`` is given. The only difference
+    is that if the user name is not available or the home directory cannot be deter-
+    mined for other reasons this leads to an error. ``glob`` will return ``GLOB_NOMATCH``
+    instead of using the pattern itself as the name.
+
+    This functionality is equivalent to what is available in C-shells if the ``nonomatch``
+    flag is not set.
+
+``GLOB_ONLYDIR``
+
+    If this flag is used the globbing function takes this as a **hint** that the caller is
+    only interested in directories matching the pattern. If the information about
+    the type of the file is easily available non-directories will be rejected but no
+    extra work will be done to determine the information for each file. I.e., the
+    caller must still be able to filter directories out.
+
+    This functionality is only available with the GNU ``glob`` implementation. It is
+    mainly used internally to increase the performance but might be useful for a
+    user as well and therefore is documented here.
+
+Calling ``glob`` will in most cases allocate resources which are used to represent the result
+of the function call. If the same object of type ``glob_t`` is used in multiple call to ``glob`` the
+resources are freed or reused so that no leaks appear. But this does not include the time
+when all ``glob`` calls are done.
+
+``void globfree ( glob t *pglob )``        [Function]
+
+    Preliminary: | MT-Safe | AS-Unsafe corrupt heap | AC-Unsafe corrupt mem | See
+                 Section [POSIX Safety Concepts].
+
+    The ``globfree`` function frees all resources allocated by previous calls to ``glob`` associ-
+    ated with the object pointed to by *pglob*. This function should be called whenever
+    the currently used ``glob_t`` typed object isn’t used anymore.
+
+``void globfree64 ( glob64 t *pglob )``        [Function]
+
+    Preliminary: | MT-Safe | AS-Unsafe corrupt lock | AC-Unsafe corrupt lock fd mem
+        See Section [POSIX Safety Concepts].
+
+    This function is equivalent to ``globfree`` but it frees records of type ``glob64_t`` which
+    were allocated by ``glob64``.
+
+Regular Expression Matching
+===========================
+
+The GNU C Library supports two interfaces for matching regular expressions. One is the
+standard **POSIX.2** interface, and the other is what the GNU C Library has had for many
+years.
+
+Both interfaces are declared in the header file ``regex.h``. If you define ``_POSIX_C_SOURCE``,
+then only the **POSIX.2** functions, structures, and constants are declared.
