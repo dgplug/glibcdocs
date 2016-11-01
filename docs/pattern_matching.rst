@@ -642,3 +642,149 @@ years.
 
 Both interfaces are declared in the header file ``regex.h``. If you define ``_POSIX_C_SOURCE``,
 then only the **POSIX.2** functions, structures, and constants are declared.
+
+POSIX Regular Expression Compilation
+------------------------------------
+
+Before you can actually match a regular expression, you must ``compile`` it. This is not true
+compilation—it produces a special data structure, not machine instructions. But it is like
+ordinary compilation in that its purpose is to enable you to ``"execute"`` the pattern fast. (See
+Section [Matching a Compiled POSIX Regular Expression], for how to use
+the compiled regular expression for matching.)
+
+There is a special data type for compiled regular expressions:
+
+``regex_t``                            [Data Type]
+
+    This type of object holds a compiled regular expression. It is actually a structure. It
+    has just one field that your programs should look at:
+
+    ``re_nsub``
+
+        This field holds the number of parenthetical subexpressions in the regular
+        expression that was compiled.
+
+    There are several other fields, but we don’t describe them here, because only the
+    functions in the library should use them.
+
+    After you create a ``regex_t`` object, you can compile a regular expression into it by calling
+    regcomp.
+
+``int regcomp ( regex t *restrict compiled, 
+                const char *restrict pattern, int cflags )``            [Function]
+
+    Preliminary: | MT-Safe locale | AS-Unsafe corrupt heap lock dlopen | AC-Unsafe
+                 corrupt lock mem fd | See Section [POSIX Safety Concepts]
+
+    The function ``regcomp`` "compiles" a regular expression into a data structure that you
+    can use with ``regexec`` to match against a string. The compiled regular expression
+    format is designed for efficient matching. ``regcomp`` stores it into ``*compiled``.
+
+    It’s up to you to allocate an object of type ``regex_t`` and pass its address to ``regcomp``.
+
+    The argument *cflags* lets you specify various options that control the syntax and
+    semantics of regular expressions. See Section [Flags for POSIX Regular Ex-
+    pressions].
+
+    If you use the flag ``REG_NOSUB``, then ``regcomp`` omits from the compiled regular expres-
+    sion the information necessary to record how subexpressions actually match. In this
+    case, you might as well pass 0 for the *matchptr* and *nmatch* arguments when you call
+    ``regexec``.
+
+    If you don’t use ``REG_NOSUB``, then the compiled regular expression does have the
+    capacity to record how subexpressions match. Also, ``regcomp`` tells you how many
+    subexpressions *pattern* has, by storing the number in ``compiled->re_nsub``. You can
+    use that value to decide how long an array to allocate to hold information about
+    subexpression matches.
+
+    ``regcomp`` returns 0 if it succeeds in compiling the regular expression; otherwise, it
+    returns a nonzero error code (see the table below). You can use ``regerror`` to produce
+    an error message string describing the reason for a nonzero value; see Section
+    [POSIX Regexp Matching Cleanup].
+
+Here are the possible nonzero values that regcomp can return:
+
+    ``REG_BADBR``
+
+        There was an invalid ``'\{...\}'`` construct in the regular expression. A valid
+        ``'\{...\}'`` construct must contain either a single number, or two numbers in
+        increasing order separated by a comma.
+
+    ``REG_BADPAT``
+
+        There was a syntax error in the regular expression.
+
+    ``REG_BADRPT``
+
+        A repetition operator such as ``'?'`` or ``'*'`` appeared in a bad position (with no
+        preceding subexpression to act on).
+
+    ``REG_ECOLLATE``
+
+        The regular expression referred to an invalid collating element (one not defined
+        in the current locale for string collation). See Section [Locale Categories].
+
+    ``REG_ECTYPE``
+
+        The regular expression referred to an invalid character class name.
+
+    ``REG_EESCAPE``
+
+        The regular expression ended with ``'\'``.
+
+    ``REG_ESUBREG``
+
+        There was an invalid number in the ``'\digit'`` construct.
+
+    ``REG_EBRACK``
+
+        There were unbalanced square brackets in the regular expression.
+
+    ``REG_EPAREN``
+
+        An extended regular expression had unbalanced parentheses, or a basic regular
+        expression had unbalanced ``'\(' and '\)'``.
+
+    ``REG_EBRACE``
+
+        The regular expression had unbalanced ``'\{'`` and ``'\}'``.
+
+    ``REG_ERANGE``
+
+        One of the endpoints in a range expression was invalid.
+
+    ``REG_ESPACE``
+
+        regcomp ran out of memory.
+
+Flags for POSIX Regular Expressions
+-----------------------------------
+
+These are the bit flags that you can use in the *cflags* operand when compiling a regular
+expression with ``regcomp``.
+
+``REG_EXTENDED``
+
+    Treat the pattern as an extended regular expression, rather than as a basic
+    regular expression.
+
+``REG_ICASE``
+
+    Ignore case when matching letters.
+
+``REG_NOSUB``
+
+    Don’t bother storing the contents of the *matchptr* array.
+
+``REG_NEWLINE``
+
+    Treat a newline in *string* as dividing *string* into multiple lines, so that ``'$'`` can
+    match before the newline and ``'^'`` can match after. Also, don’t permit ``'.'`` to
+    match a newline, and don’t permit ``'[^...]'`` to match a newline.
+
+    Otherwise, newline acts like any other ordinary character.
+
+Matching a Compiled POSIX Regular Expression
+--------------------------------------------
+
+
