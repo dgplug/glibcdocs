@@ -592,7 +592,7 @@ has been compiled, the linker resolves these references to the actual definition
 the archive file.
 
 Header files are included into a program source file by the ‘#include’ preprocessor
-directive. The C language supports two forms of this directive; the firs
+directive. The C language supports two forms of this directive; the first
 ::
 
     #include "header"
